@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="col-md-10" id="body">
+	<h1 id="schedHead">This week's Schedule</h1>
+	<a href="setSchedule">Set Schedule</a>
+	<div id="scheduleCont">
+		<div id="scheduleWrap">
+			<div class="day">
+				<h3>Monday</h3>
+				<hr />
+				{% if mft != [] %}
+					<p>Field Trip Today!</p>
+					<p>{{mft[0]["Name"]}}</p>
+				{% endif %}
+				<hr />
+				{% for row in monday %}
+				<p>
+					{{row["Time"]}} doing {{row["Job"]}}
+				</p>
+				<p>
+					&nbsp; {{row["Fname"]}} {{row["Lname"]}}
+				</p>
+				{% endfor %}
+			</div>
+			<div class="day">
+				<h3>Tuesday</h3>
+				<hr />
+				{% if tft != [] %}
+					<p>Field Trip Today!</p>
+					<p>{{tft[0]["Name"]}}</p>
+				{% endif %}
+				<hr />
+				{% for row in tuesday %}
+				<p>
+					{{row["Time"]}} doing {{row["Job"]}}
+				</p>
+				<p>
+					&nbsp; {{row["Fname"]}} {{row["Lname"]}}
+				</p>
+				{% endfor %}
+			</div>
+			<div class="day">
+				<h3>Wednesday</h3>
+				<hr />
+				{% if wft != [] %}
+					<p>Field Trip Today!</p>
+					<p>{{wft[0]["Name"]}}</p>
+				{% endif %}
+				<hr />
+				{% for row in wednesday %}
+				<p>
+					{{row["Time"]}} doing {{row["Job"]}}
+				</p>
+				<p>
+					&nbsp; {{row["Fname"]}} {{row["Lname"]}}
+				</p>
+				{% endfor %}
+			</div>
+			<div class="day">
+				<h3>Thursday</h3>
+				<hr />
+				{% if hft != [] %}
+					<p>Field Trip Today!</p>
+					<p>{{hft[0]["Name"]}}</p>
+				{% endif %}
+				<hr />
+				
+				{% for row in monday %}
+				<p>
+					{{row["Time"]}} doing {{row["Job"]}}
+				</p>
+				<p>
+					&nbsp; {{row["Fname"]}} {{row["Lname"]}}
+				</p>
+				{% endfor %}
+			</div>
+			<div class="day">
+				<h3>Friday</h3>
+				<hr />
+				{% if fft != [] %}
+					<p>Field Trip Today!</p>
+					<p>{{fft[0]["Name"]}}</p>
+				{% endif %}
+				<hr />
+				
+				{% for row in monday %}
+				<p>
+					{{row["Time"]}} doing {{row["Job"]}}
+				</p>
+				<p>
+					&nbsp; {{row["Fname"]}} {{row["Lname"]}}
+				</p>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+</script>
+{% endblock %}
+

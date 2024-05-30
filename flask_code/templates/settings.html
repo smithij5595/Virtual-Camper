@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="col-md-8" id="body">
+		<h2>Set Color Theme</h2>
+		<div class="dropdown">
+			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Choose Theme
+			<span class="caret"></span></button>
+			<ul class="dropdown-menu">
+				{% for row in themes %}
+				<li id='{{row['Name']}}'><a onmousedown="setAsSelected('{{row['Name']}}');">{{row['Name']}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<br />
+		<button id="" onclick="attemptSaveTheme('{{session['id']}}');">Save</button>
+		<br />
+		<p id="themeMessage" style="display: none;"></p>
+		
+		<br />
+		<br />
+		
+		<h2>Change Password</h2>
+		<input type="password" id="oldPass" placeholder="current password" />
+		<br />
+		<br />
+		<input type="password" id="newPass" placeholder="new password" />
+		<input type="password" id="confirmNewPass" placeholder="confirm password" />
+		<button onclick="attemptChangePass('{{session['id']}}');">Save</button>
+		<br />
+		<p id="passMessage" style="display: none;"></p>
+		
+		{% if session['isAdmin'] == "True" %}
+		<h2>Add Counselor</h2>
+		<div id="registerForm">
+			<input type="text" id="Fname" placeholder="First Name" />
+			<input type="text" id="Lname" placeholder="Last Name" />
+			<br />
+			<br />
+			<input type="text" id="Uname" placeholder="username" />
+			<br />
+			<br />
+			<input type="password" id="pass" placeholder="new password" />
+			&nbsp;
+			<input type="password" id="confirmPass" placeholder="confirm password" />
+			<br />
+			<br />
+			<div class="dropdown">
+				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Make Admin?
+				<span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					<li>
+						<a onmousedown="makeAdminAns('yes');">Yes</a>
+					</li>
+					<li>
+						<a onmousedown="makeAdminAns('no');">No</a>
+					</li>
+				</ul>
+				<p id="adminAns" style="display: none;">no</p>
+			</div>
+			<br />
+			<br />
+			<button onclick="attemptRegister();">Add User</button>
+			<br />
+			<p id="regMessage" style="display: none;"></p>
+		</div>
+		{% endif %}
+		
+		{% if session['isAdmin'] == "True" %}
+		<h2>Add Job</h2>
+		<div id="registerForm">
+			<input type="text" id="Jname" placeholder="Job Name" />
+			<input type="text" id="time" placeholder="time ex. '7:30-4:30'"/>
+			<button onclick="attemptAddJob();">Add Job</button>
+			<br />
+			<p id="jobMessage" style="display: none;"></p>
+		</div>
+		{% endif %}
+	</div>
+	</div>
+	
+	<div class="col-md-2">
+		{% if session['isAdmin'] == "True" %}
+	   	<a onmousedown="showCounselorDrop();" style="display: none;">Remove Counselor</a>
+	   	<br />
+	   	<br />
+	   	<div class="dropdown" style="display: none;">
+			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Choose Couselor
+			<span class="caret"></span></button>
+			<ul class="dropdown-menu">
+				{% for row in counselors %}
+				<li>
+					<a onmousedown="attemptAdd('{{row["ID"]}}');" id='{{row["ID"]}}'>{{row["First Name"]}} {{row["Last Name"]}}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	   {% endif %}
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<script>
+	function attemptSaveTheme(id) {
+			var message = document.getElementById("themeMessage");
+			var selected = document.getElementById("selected");
+			if(selected == null) {
+				message.style.display = 'initial';
+				message.className = "badMessage";
+				message.textContent = "You must select a theme to save!";
+				setTimeout(function(){
+				    document.getElementById("themeMessage").style.display = 'none';
+				}, 3000);
+			} else {
+				selected.id = selected.textContent;
+				var themeName = selected.textContent;
+				var formData = new FormData();
+				formData.append("theme", themeName);
+				formData.append("id", id);
+				
+				$.ajax({
+					type: "POST",
+					url : "/settingsTheme",
+					data: formData,
+					contentType : false,
+					processData : false,
+					success: function(result){
+						message.className = "goodMessage";
+						message.textContent = "You saved your theme! Refresh the page to see it!";
+						message.style.display = 'initial';	
+					}
+				});
+			}
+		}
+		
+		function setAsSelected(theme) {
+			var selected = document.getElementById(theme);
+			selected.id = "selected";
+		}
+		
+		function attemptChangePass(id) {
+			var message = document.getElementById("passMessage");
+			var newPass = document.getElementById("newPass");
+			var oldPass = document.getElementById("oldPass");
+			
+			var confirm = document.getElementById("confirmNewPass");
+			
+			if(newPass.value == "" || confirm.value == "" || oldPass.value == "") {
+				message.style.display = 'initial';
+				message.className = "badMessage";
+				message.textContent = "You cannot leave anything blank!";
+				setTimeout(function(){
+				    document.getElementById("passMessage").style.display = 'none';
+				}, 3000);
+			}else if(newPass.value != confirm.value){
+				message.style.display = 'initial';
+				message.className = "badMessage";
+				message.textContent = "Your passwords do not match!";
+				setTimeout(function(){
+				    document.getElementById("passMessage").style.display = 'none';
+				}, 3000);
+			} else {
+				newP = newPass.value;
+				old = oldPass.value;
+				var formData = new FormData();
+				formData.append("newPass", newP);
+				formData.append("oldPass", old);
+				formData.append("id", id);
+				
+				$.ajax({
+					type: "POST",
+					url : "/settingsPassword",
+					data: formData,
+					contentType : false,
+					processData : false,
+					success: function(result){
+						if(result == "true") {
+							message.className = "goodMessage";
+							message.textContent = "Your password was changed successfully";
+							message.style.display = 'initial';
+							setTimeout(function(){
+							    document.getElementById("passMessage").style.display = 'none';
+							    newPass.value = "";
+							    oldPass.value = "";
+							    confirm.value = "";
+							}, 3000);							
+						}else{
+							message.className = "badMessage";
+							message.textContent = "You lied! You gave us the wrong password!";
+							message.style.display = 'initial';
+							setTimeout(function(){
+							    document.getElementById("passMessage").style.display = 'none';
+							    newPass.value = "";
+							    oldPass.value = "";
+							    confirm.value = "";
+							}, 3000);
+						}
+					}
+				});
+			}
+		}
+			
+		function attemptRegister() {
+			var message = document.getElementById("regMessage");
+			
+			var fname = document.getElementById("Fname").value;
+			var lname = document.getElementById("Lname").value;
+			var uname = document.getElementById("Uname").value;
+			var pass = document.getElementById("pass").value;
+			var confirm = document.getElementById("confirmPass").value;
+			
+			var admin = document.getElementById("adminAns").textContent;
+			
+			if(pass == "" || 
+					confirm == "" || 
+					fname == "" ||
+					lname == "" ||
+					uname == "") {
+				message.style.display = 'initial';
+				message.className = "badMessage";
+				message.textContent = "You cannot leave anything blank!";
+				setTimeout(function(){
+				    message.style.display = 'none';
+				}, 3000);
+			} else if(pass != confirm) {
+				message.style.display = 'initial';
+				message.className = "badMessage";
+				message.textContent = "Your passwords do not match!";
+				pass = "";
+				confirm = "";
+				setTimeout(function(){
+				    message.style.display = 'none';
+				}, 3000);
+			} else {
+				var formData = new FormData();
+				formData.append("username", uname);
+				formData.append("fname", fname);
+				formData.append("lname", lname);
+				formData.append("pass", pass);
+				if(admin == 'yes'){
+					admin = true;
+				} else {
+					admin = false;
+				}
+				formData.append("isAdmin", admin);
+				
+				$.ajax({
+					type: "POST",
+					url : "/settingsReg",
+					data: formData,
+					contentType : false,
+					processData : false,
+					success: function(result){
+						if(result == "true") {
+							message.className = "goodMessage";
+							message.textContent = fname+" "+lname+"'s account was created successfully!";
+							message.style.display = 'initial';
+							setTimeout(function(){
+							    message.style.display = 'none';
+							    document.getElementById("Fname").value = "";
+							    document.getElementById("Lname").value = "";
+							    document.getElementById("Uname").value = "";
+							    document.getElementById("pass").value = "";
+							    document.getElementById("confirmPass").value = "";
+							    admin ='no';
+							}, 5000);							
+						}else{
+							message.className = "badMessage";
+							message.textContent = "Username already exists in the database, choose another";
+							message.style.display = 'initial';
+						    uname.value = "";
+							setTimeout(function(){
+							    message.style.display = 'none';
+							}, 3000);
+						}	
+					}
+				});
+			}
+		}
+		
+		function makeAdminAns(ans) {
+			if(ans == 'yes') {
+				document.getElementById("adminAns").textContent = 'yes';
+			}else {
+				document.getElementById("adminAns").textContent = 'no';
+			}
+		}
+		
+		function attemptAddJob() {
+			var message = document.getElementById("jobMessage")
+			var jinput = document.getElementById("Jname");
+			var time = document.getElementById("time");
+			var formData = new FormData();
+			formData.append("Jname", jinput.value);
+			formData.append("time", time.value);
+			
+			$.ajax({
+				type: "POST",
+				url : "/settingsAddJob",
+				data: formData,
+				contentType : false,
+				processData : false,
+				success: function(result){
+					message.className = "goodMessage";
+					message.textContent = "You added "+jinput.value+" as a job!";
+					message.style.display = 'initial';
+					setTimeout(function(){
+					    document.getElementById("jobMessage").style.display = 'none';
+					    jinput.value = "";
+					}, 3000);
+				}
+			});
+		}
+	</script>
+{% endblock %}

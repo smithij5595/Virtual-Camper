@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>VirtualCamp</title>
+		<link href="{{ url_for('static', filename=session['theme']) }}" type="text/css" rel="stylesheet" />
+		<script src="http://code.jquery.com/jquery-2.1.4.js"></script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<div class="row" id="header">
+			<div class="col-md-1"></div>
+			<div class="col-md-4" id="logo"><a href="attendance">Virtual<span id="camp">Camp</span></a></div>
+			<div class="col-md-1"></div>
+			<div class="col-md-2">Shelbyville Parks Dept. Day Camp</div>
+			<div class="col-md-1">Hello, {{session['name']}}</div>
+			<div class="col-md-2"><a href="about">About</a>
+				|
+			<a href="contact">Contact Us</a></div>
+			<div class="col-md-1"><a href="login">logout</a></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-2" id="navList">
+				<ul>
+					<li class="navItem"><a class="navClick" href="attendance">Home</a></li>
+					<li class="navItem"><a class="navClick" href="schedule">Work Schedule</a></li>
+					<li class="navItem"><a class="navClick" href="upload">Upload</a></li>
+					<li class="navItem"><a class="navClick" href="settings">Settings</a></li>
+				</ul>
+			</div>
+			<div class="col-md-8" id="body">
+				<ul id="todAttend"><h1>Today's Attendance
+									<br />
+									<small>Count is: <span id="count">{{count}}</span></small></h1>
+								   {% if session['isAdmin'] == "True" %}
+								   	<a href="setAttendance">Set Today's Attendance</a>
+								   	<br />
+								   {% endif %}
+								   <a href="archive">View Archive</a>
+					<hr />
+
+					{% for row in attendance %}
+						{% if row["here"] == True %}
+							<li class="attendName"><button id='{{row["ID"]}}b' class="leftButton" onclick="camperChanged('{{row["ID"]}}')">Left</button>
+								&nbsp;
+								<span id='{{row["ID"]}}s'>{{row["First Name"]}} {{row["Last Name"]}}, {{row["Tribe"]}}</span>
+							</li>
+						{% else %}
+							<li class="attendName"><button id='{{row["ID"]}}b' class="leftButton" onclick="camperChanged('{{row["ID"]}}')">Came Back</button>
+								&nbsp;
+								<span id='{{row["ID"]}}s' style="color: red;">{{row["First Name"]}} {{row["Last Name"]}}, {{row["Tribe"]}}</span>
+							</li>
+						{% endif %}
+					{% endfor %}
+				</ul>
+				<ul>
+					<li id="notHere" style="display: none;">
+						<div class="dropdown">
+							<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Choose Camper
+  							<span class="caret"></span></button>
+  							<ul class="dropdown-menu">
+								{% for row in notHereYet %}
+								<li>
+									<a onmousedown="attemptAdd('{{row["ID"]}}');" id='{{row["ID"]}}'>{{row["First Name"]}} {{row["Last Name"]}}, {{row["Tribe"]}}</a>
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</li>
+					<li id="addCamper"><a onmousedown="displayAdd();">add</a></li>
+
+					<li id="x" style="display: none;"><a onmousedown="hideAdd();"> Cancel </a></li>
+				</ul>
+			</div>
+			<div class="col-md-2" id="rightPanel">
+				<ul><h2 id="camperPagesHeading">Campers Pages</h2>
+					<hr style="width: 100%"/>
+					{% for row in allCampers %}
+					<a class="pageLink" href="/camperPage/{{row["ID"]}}" id='{{row["ID"]}}'><li id="camperLink">{{row["First Name"]}} {{row["Last Name"]}}, {{row["Tribe"]}}</li></a>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</body>
+	
+	<script>
+		function attemptAdd(id) {
+			var elem = document.getElementById(id);
+			var string = elem.textContent;
+			string += ", ";
+			string += id;
+			var formData = new FormData();
+			formData.append("string", string);
+			
+			$.ajax({
+				type: "POST",
+				url : "/attendance",
+				data: formData,
+				contentType : false,
+				processData : false,
+				success: function(result){
+						var count = document.getElementById("count").innerHTML;
+						document.getElementById("count").innerHTML = parseInt(count) + 1;
+						var ul = document.getElementById("todAttend");
+						var li = document.createElement("li");
+						li.innerHTML = result;
+						ul.appendChild(li);
+					}
+			});
+		}
+		
+		function displayAdd() {
+			var not = document.getElementById("notHere");
+			not.style.display = "initial";
+			var x = document.getElementById("x");
+			x.style.display = "initial";
+			var oldAdd = document.getElementById("addCamper");
+			oldAdd.style.display = "none";
+		}
+		
+		function hideAdd() {
+			var not = document.getElementById("notHere");
+			not.style.display = "none";
+			var x = document.getElementById("x");
+			x.style.display = "none";
+			var realAdd = document.getElementById("addCamper");
+			realAdd.style.display = "initial";
+		}
+		
+		// function attemptCamperPage(id) {
+			// var formData = new FormData();
+			// formData.append('id', id);
+// 			
+			// $.ajax({
+				// type: "GET",
+				// url : "/camperPage",
+				// data: formData,
+				// contentType : false,
+				// processData : false,
+				// success: function(result){
+						// console.log("Cool beans");
+						// // window.location.replace("/camperPage")
+					// }
+			// });
+		// }
+		
+		function camperChanged(id) {
+			var richText = document.getElementById(id+'s');
+			if(richText.style.color == 'red') {
+				richText.style.color = 'black';
+			}else{
+				richText.style.color = 'red';
+			}
+			var button = document.getElementById(id+'b');
+			if(button.textContent == "Left") {
+				var formData = new FormData();
+				formData.append('id', id);
+				$.ajax({
+				type: "POST",
+				url : "/camperLeft",
+				data: formData,
+				contentType : false,
+				processData : false,
+				success: function(result){
+						var count = document.getElementById("count").textContent;
+						document.getElementById("count").textContent = parseInt(count) - 1;
+						button.textContent = "Came Back";
+					}
+				});
+			}else{
+				var formData = new FormData();
+				formData.append('id', id);
+				$.ajax({
+				type: "POST",
+				url : "/camperCameBack",
+				data: formData,
+				contentType : false,
+				processData : false,
+				success: function(result){
+						var count = document.getElementById("count").textContent;
+						document.getElementById("count").textContent = parseInt(count) + 1;
+						button.textContent = "Left";
+					}
+				});
+			}
+		}
+	</script>
+
+</html>
+				

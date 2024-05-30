@@ -1,0 +1,129 @@
+body		{font-family: "Comic Sans MS", cursive, sans-serif;}
+
+a			{color: black;
+			cursor: pointer;}
+
+a:hover		{color: black;
+			text-decoration: none;}
+			
+.goodMessage	{color: green;
+				font-style: italic;}
+				
+.badMessage	{color: red;
+			font-style: italic;}
+			
+.attendName	{padding: 9px;}
+
+#template	{margin-left: 25px;}
+
+#header		{font-family: "Comic Sans MS", cursive, sans-serif;
+			height: 100px;
+			padding-top: 25px;
+			background-color: #ADD8E6;
+			color: white;}
+			
+#body		{font-family: "Comic Sans MS", cursive, sans-serif;
+			padding-top: 45px;
+			padding-left: 60px;}
+			
+#rightPanel	{font-family: "Comic Sans MS", cursive, sans-serif;
+			padding-top: 45px;
+			border-left: solid #ADD8E6 1px;}
+			
+#camperLink	{padding: 15px;
+			border-bottom: solid #ADD8E6 1px;}
+			
+li#camperLink:hover	{background-color: #f6f6f6;}
+
+a.pageLink	{color: black;}
+
+a.pageLink:hover	{text-decoration: none;
+					color: #ADD8E6;}
+			
+#navList	{font-family: "Comic Sans MS", cursive, sans-serif;
+			padding-left: 30px;
+			border-right: solid #ADD8E6 2px;}
+			
+.navItem	{border-bottom: solid #ADD8E6 1px;
+			padding: 26px;
+			font-size: 20px;}
+	
+.navClick	{color: black;
+			text-decoration: none;}
+			
+.navClick:hover	{color: #ADD8E6;
+				text-decoration: none;}
+				
+#startDate		{width: 200px;}
+
+#scheduleWrap	{width: 1800px;
+				height: 530px;}
+
+#scheduleCont	{background-color:#ADD8E6;
+				border-right: solid #ADD8E6 5px;
+				border-left: solid #ADD8E6 5px;
+				width: 1000px;
+				height: 555px;
+				overflow-x: scroll;}
+
+#oscheduleWrap	{width: auto;
+				height: 460px;}
+
+#oscheduleCont	{background-color:#ADD8E6;
+				border: solid #ADD8E6 5px;
+				width: 400px;
+				height: 500px;
+				overflow-y: scroll;
+				margin-bottom: 20px;}
+
+.day		 {background-color: white;
+			float: left;
+			padding: 6px;
+			margin: 5px;
+			height: auto;
+			width:	350px;}
+			
+#schedHead	{text-align: center;}
+			
+li.headerLi	{list-style-type: none;
+			display: inline;}
+			
+#logo		{font-size: 28pt;}
+			
+#camp		{color: white;
+			font-size: 32pt;}
+
+#addCamper	{text-decoration: underline;}
+
+#x			{text-decoration: underline;}
+
+#logout		{text-align: right;
+			font-size: 11pt;}
+
+table.bodyTable		{width: 80%;
+					margin: 0 auto;}
+
+hr			{width: 150px;
+			margin: 0;}
+			
+ul			{list-style-type: none;
+			padding: 0;}
+			
+
+#todayAttendance	{width: 33%;}
+
+
+#links		{width: 34%;
+			text-align: right;}
+			
+hr#right	{text-align:right;
+			margin-left: 365px;}
+
+h2#camperPagesHeading	{text-align: center;}
+
+#registerForm	{background-color: #ADD8E6;
+				width: 465px;
+				padding: 8px;}
+
+a			{text-decoration: none;
+			color: black;}

@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>VirtualCamp</title>
+		<link href="{{ url_for('static', filename=session['theme']) }}" type="text/css" rel="stylesheet" />
+		<script src="http://code.jquery.com/jquery-2.1.4.js"></script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<div class="row" id="header">
+			<div class="col-md-1"></div>
+			<div class="col-md-4">
+				<span id="logo"><a href="attendance">Virtual<span id="camp">Camp</span></a></span>
+			</div>
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				Shelbyville Parks Dept. Day Camp
+			</div>
+			<div class="col-md-1">
+				Hello, {{session['name']}}
+			</div>
+			<div class="col-md-2">
+				<a href="about">About</a>
+				|
+				<a href="contact">Contact Us</a>
+			</div>
+			<div class="col-md-1">
+				<a href="login">logout</a>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-2" id="navList">
+				<ul>
+					<li class="navItem">
+						<a class="navClick" href="attendance">Home</a>
+					</li>
+					<li class="navItem">
+						<a class="navClick" href="schedule">Work Schedule</a>
+					</li>
+					<li class="navItem">
+						<a class="navClick" href="upload">Upload</a>
+					</li>
+					<li class="navItem">
+						<a class="navClick" href="settings">Settings</a>
+					</li>
+				</ul>
+			</div>
+			<div class="col-md-7">
+				<div class="container">
+					<h1>Set the Schedule</h1>
+					<br />
+					<br />
+					<div id="oscheduleCont">
+						<div id="oscheduleWrap">
+							<div class="day">
+								<h3>Day Template</h3>
+								<hr />
+								<span id="answer" style="display: none;"></span>
+								{% for row in allJobs %}
+								<div>
+									{{row["Time"]}}
+									doing {{row["Name"]}}
+
+									<div class="dropdown">
+										<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id='b{{row["JID"]}}'>
+											Choose A Worker <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											{% for obj in workers %}
+											<li>
+												<a onmousedown="addAsPerson('{{obj["EID"]}}', '{{row["JID"]}}', '{{obj["Fname"]}} {{obj["Lname"]}}');">{{obj["Fname"]}} {{obj["Lname"]}}</a>
+											</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<hr />
+								{% endfor %}
+								Date:
+								<input type="text" placeholder="ex. 2016-02-22" id="date" />
+								&nbsp;
+								<button onclick="attemptSave();">
+									Save
+								</button>
+
+							</div>
+<!-- 
+							<div class="day">
+								<h3>Tuesday</h3>
+								<hr />
+								{% for row in allJobs %}
+								<div>
+									{{row["Time"]}}
+									doing {{row["Name"]}}
+
+									<div class="dropdown">
+										<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+											Choose A Worker <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											{% for obj in workers %}
+											<li>
+												<a onmousedown="addAsPerson();">{{obj["Fname"]}} {{obj["Lname"]}}</a>
+											</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<hr />
+								{% endfor %}
+							</div>
+
+							<div class="day">
+								<h3>Wednesday</h3>
+								<hr />
+								{% for row in allJobs %}
+								<div>
+									{{row["Time"]}}
+									doing {{row["Name"]}}
+
+									<div class="dropdown">
+										<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+											Choose A Worker <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											{% for obj in workers %}
+											<li>
+												<a onmousedown="attemptAdd();">{{obj["Fname"]}} {{obj["Lname"]}}</a>
+											</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<hr />
+								{% endfor %}
+							</div>
+
+							<div class="day">
+								<h3>Thursday</h3>
+								<hr />
+								{% for row in allJobs %}
+								<div>
+									{{row["Time"]}}
+									doing {{row["Name"]}}
+
+									<div class="dropdown">
+										<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+											Choose A Worker <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											{% for obj in workers %}
+											<li>
+												<a onmousedown="attemptAdd();">{{obj["Fname"]}} {{obj["Lname"]}}</a>
+											</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<hr />
+								{% endfor %}
+							</div>
+
+							<div class="day">
+								<h3>Friday</h3>
+								<hr />
+								{% for row in allJobs %}
+								<div>
+									{{row["Time"]}}
+									doing {{row["Name"]}}
+
+									<div class="dropdown">
+										<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+											Choose A Worker <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											{% for obj in workers %}
+											<li>
+												<a onmousedown="attemptAdd();">{{obj["Fname"]}} {{obj["Lname"]}}</a>
+											</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<hr />
+								{% endfor %}
+							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<h2 style="display: none;" id="message">You saved the day! Get it?</h2>
+			</div>
+
+		</div>
+	</body>
+	<script>
+		function addAsPerson(eid, jid, name) {
+			var span = document.getElementById("answer");
+			span.textContent += eid + "," + jid + ";";
+			var button = document.getElementById("b"+jid);
+			button.textContent = name;
+		}
+
+		function attemptSave() {
+			var date = document.getElementById("date");
+			var dateString = date.value;
+			var span = document.getElementById("answer");
+			var messy = span.textContent;
+
+			var formData = new FormData();
+			formData.append('messyString', messy);
+			formData.append('date', dateString);
+			$.ajax({
+				type : "POST",
+				url : "/setSchedule",
+				data : formData,
+				contentType : false,
+				processData : false,
+				success : function(result) {
+					document.getElementById("message").style.display = "initial"
+				}
+			});
+		}
+	</script>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>VirtualCamp</title>
+		<link href="{{ url_for('static', filename=session['theme']) }}" type="text/css" rel="stylesheet" />
+		<script src="http://code.jquery.com/jquery-2.1.4.js"></script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<div class="row" id="header">
+			<div class="col-md-1"></div>
+			<div class="col-md-4"><span id="logo"><a href="attendance">Virtual<span id="camp">Camp</span></a></span></div>
+			<div class="col-md-1"></div>
+			<div class="col-md-2">Shelbyville Parks Dept. Day Camp</div>
+			<div class="col-md-1">Hello, {{session['name']}}</div>
+			<div class="col-md-2"><a href="about">About</a>
+				|
+			<a href="contact">Contact Us</a></div>
+			<div class="col-md-1"><a href="login">logout</a></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-2" id="navList">
+				<ul>
+					<li class="navItem"><a class="navClick" href="attendance">Home</a></li>
+					<li class="navItem"><a class="navClick" href="schedule">Work Schedule</a></li>
+					<li class="navItem"><a class="navClick" href="upload">Upload</a></li>
+					<li class="navItem"><a class="navClick" href="settings">Settings</a></li>
+				</ul>
+			</div>
+			
+			<div class="col-md-8" id="body">
+				<ul id="todAttend"><h1>Set Today's Attendance</h1>
+					<hr />
+					{% for row in list %}
+					<div class="checkbox" id='{{row["ID"]}}'>
+						<label id='{{row["ID"]}}label'><input type="checkbox" id='{{row["ID"]}}i'>{{row["First Name"]}} {{row["Last Name"]}}, {{row["Tribe"]}}</label>
+					</div>
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="col-md-2">
+				<button onmousedown="attemptSave();">Save</button>
+				<br />
+				<p id="message" style="display: none;"></p>
+			</div>
+		</div>
+	</body>
+	
+	<script>
+		function attemptSave() {
+			var rows = document.getElementsByClassName("checkbox");
+			var adding =[];
+			for(i = 0; i < rows.length; i++){
+				if(document.getElementById(rows[i].id+'i').checked){
+					adding.push(rows[i].id);			
+				}
+			}
+			if(adding.length == 0){
+				var message = document.getElementById("message");
+				message.style.display = 'initial';
+				message.className = "badMessage";
+				message.textContent = "You did not select anything";
+				setTimeout(function(){
+				    document.getElementById("message").style.display = 'none';
+				}, 2000);
+			}else{
+				var formData = new FormData();
+				formData.append("list", adding);
+				
+				$.ajax({
+					type: "POST",
+					url : "/setAttendance",
+					data: formData,
+					contentType : false,
+					processData : false,
+					success: function(result){
+						window.location.replace("/attendance")
+					}
+				});
+			}
+		}
+	</script>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>VirtualCamp</title>
+		<link href="{{ url_for('static', filename=session['theme']) }}" type="text/css" rel="stylesheet" />
+		<script src="http://code.jquery.com/jquery-2.1.4.js"></script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	</head>
+
+	<body onload="">
+		<div class="row" id="header">
+			<div class="col-md-1"></div>
+			<div class="col-md-4"><span id="logo"><a href="attendance">Virtual<span id="camp">Camp</span></a></span></div>
+			<div class="col-md-1"></div>
+			<div class="col-md-2">Shelbyville Parks Dept. Day Camp</div>
+			<div class="col-md-1">Hello, {{session['name']}}</div>
+			<div class="col-md-2"><a href="about">About</a>
+				|
+			<a href="contact">Contact Us</a></div>
+			<div class="col-md-1"><a href="login">logout</a></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-2" id="navList">
+				<ul>
+					<li class="navItem"><a class="navClick" href="/attendance">Home</a></li>
+					<li class="navItem"><a class="navClick" href="/schedule">Work Schedule</a></li>
+					<li class="navItem"><a class="navClick" href="/upload">Upload</a></li>
+					<li class="navItem"><a class="navClick" href="/settings">Settings</a></li>
+				</ul>
+			</div>
+			<div class="col-md-8" id="body">
+				{% for row in basicInfo %}
+				<h1>{{row["First Name"]}} {{row["Last Name"]}}</h1>
+				<h3>{{row["Tribe"]}}</h3>
+				{% endfor %}
+				
+				<br />
+				<h2>Medical Information:</h2>
+				<h3>Allergies</h3>
+				{% for row in allergies %}
+				<p><strong>{{row["Desc"]}} Allergy</strong></p>
+				<p><strong>General Instructions:</strong> {{row["Gen Instr"]}}</p>
+				<p><strong>Specific Instructions:</strong> {{row["Spec Instr"]}}</p>
+				<p><strong>Severity:</strong> {{row["Sev"]}}</p>
+				<hr />
+				{% endfor %}
+				<div id="allgdrop" class="dropdown" style="display: none;">
+					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="allgButtonText">Choose Allergy
+					<span class="caret"></span></button>
+					<ul class="dropdown-menu">
+						{% for row in allAllg %}
+						<li>
+							<a onmousedown="storeAllg('{{row["AID"]}}', '{{id}}', '{{row["Description"]}}');">{{row["Description"]}}</a>
+						</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<br />
+				<form id="severity" style="display: none;">
+					<input type="radio" name="sev" value="VHigh"> Very High<br>
+					<input type="radio" name="sev" value="High"> High<br>
+					<input type="radio" name="sev" value="Medium"> Medium<br>
+					<input type="radio" name="sev" value="Low" checked=""> Low
+				</form>
+				<br />
+				<input type="text" placeholder="enter special instructions" id="specInstr" style="display: none;" />
+				
+				<br />
+				
+				<button onclick="attemptSaveAllg();" id="saveAllgButton" style="display: none;">Save</button>
+				<a id="X" style="display: none;" onmousedown="hideAllgAdd();"> Cancel </a>
+				<a onmousedown="displayAllgAdd();" id="algadd">add</a>
+				<p class="goodMessage" id="allgMessage" style="display: none;"></p>
+				<p id="algvariable" style="display: none;"></p>
+				
+				
+				
+				
+				
+				
+				
+				<h3>Discipline</h3>
+				{% for row in discipline %}
+				<p><strong>Issued on: {{row["Date"]}}</strong> by <strong>{{row["Fname"]}} {{row["Lname"]}}</strong></p>
+				<p>for <strong>{{row["Descr"]}}</strong>.</p>
+				<p><strong>Punishment: </strong> {{row["Punishment"]}}</p>
+				<hr />
+				{% endfor %}
+				<br />
+				<div id="notHere" class="dropdown" style="display: none;">
+					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="buttonText">Choose Discipline
+					<span class="caret"></span></button>
+					<ul class="dropdown-menu">
+						{% for row in allDiscp %}
+						<li>
+							<a onmousedown="storeDiscipline('{{id}}', '{{session['id']}}', '{{row["Descr"]}}', '{{row["DID"]}}');" id=>{{row["Descr"]}}</a>
+						</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<input type="text" placeholder="enter punishment" id="punish" style="display: none;"/>
+				<br />
+				<button onclick="attemptSaveDiscp();" id="saveDiscpButton" style="display: none;">Save</button>
+				<a id="x" style="display: none;" onmousedown="hideDisAdd();"> Cancel </a>
+				<a id="addCamper" onmousedown="displayDisAdd(addCamper);">add</a>
+				<p class="goodMessage" id="discpMessage" style="display: none;"></p>
+				<p id="variable" style="display: none;"></p>
+				
+			</div>
+			<div class="col-md-2" id="rightPanel">
+				<ul><h2>Campers Pages</h2>
+					<hr style="width: 100%"/>
+					{% for row in allCampers %}
+					<a class="pageLink" href="/camperPage/{{row["ID"]}}" id='{{row["ID"]}}'><li id="camperLink">{{row["First Name"]}} {{row["Last Name"]}}, {{row["Tribe"]}}</li></a>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</body>
+	
+	<script>
+		function storeDiscipline(camperID, counsID, discp, did) {
+			var variable = document.getElementById("variable");
+			variable.textContent = camperID + "," + counsID + "," +did;
+			
+			var button = document.getElementById("buttonText");
+			button.textContent = discp;
+			
+			showPunishment();
+		}
+		
+		function showPunishment() {
+			var punish = document.getElementById("punish");
+			punish.style.display = "initial";
+			
+		}
+		
+		function attemptSaveDiscp() {
+			var variable = document.getElementById("variable");
+			var str = variable.textContent;
+			var strarr = str.split(",");
+			var camperID = strarr[0];
+			var counsID = strarr[1];
+			var did = strarr[2];
+			var pun = document.getElementById("punish");
+			var punish = pun.value;
+			
+			console.log(str, punish);
+			
+			var formData = new FormData();
+			formData.append('did', did);
+			formData.append('camperID', camperID);
+			formData.append('counsID', counsID);
+			formData.append('punish', punish);
+			
+			var message = document.getElementById("discpMessage");
+			
+			$.ajax({
+			type: "POST",
+			url : "/camperPage/"+camperID,
+			data: formData,
+			contentType : false,
+			processData : false,
+			success: function(result){
+					var not = document.getElementById("notHere");
+					not.style.display = "none";
+					
+					var button = document.getElementById("buttonText");
+					button.textContent = "Choose Discipline"
+					
+					var x = document.getElementById("x");
+					x.style.display = "none";
+					
+					var but = document.getElementById("saveDiscpButton");
+					but.style.display = "none";
+					
+					var pu = document.getElementById("punish");
+					pu.value ="";
+					pu.style.display = "none";
+					
+					message.className = "goodMessage";
+					message.textContent = "You issued the discipline";
+					message.style.display = 'initial';
+					setTimeout(function(){
+					    window.location.replace("/camperPage/"+camperID);
+					}, 1500);
+				}
+			});
+		}
+		
+		
+		function attemptSaveAllg() {
+			var variable = document.getElementById("algvariable");
+			var str = variable.textContent;
+			var strarr = str.split(",");
+			var camperID = strarr[0];
+			var aid = strarr[1];
+			var specInst = document.getElementById("specInstr").value;
+			var sever = document.querySelector('input[name = "sev"]:checked').value;
+			
+			console.log(specInst);
+			
+			var formData = new FormData();
+			formData.append('aid', aid);
+			formData.append('camperID', camperID);
+			formData.append('severity', sever);
+			formData.append('specInst', specInst);
+			
+			var message = document.getElementById("allgMessage");
+			
+			$.ajax({
+			type: "POST",
+			url : "/camperPageAllg",
+			data: formData,
+			contentType : false,
+			processData : false,
+			success: function(result){
+					var not = document.getElementById("allgdrop");
+					not.style.display = "none";
+					
+					var button = document.getElementById("allgButtonText");
+					button.textContent = "Choose Discipline"
+					
+					var x = document.getElementById("X");
+					x.style.display = "none";
+					
+					var but = document.getElementById("saveAllgButton");
+					but.style.display = "none";
+					
+					var buts= document.getElementById("severity");
+					buts.style.display = "none";
+					
+					var pu = document.getElementById("specInstr");
+					pu.value ="";
+					pu.style.display = "none";
+					
+					message.className = "goodMessage";
+					message.textContent = "You saved the allergy";
+					message.style.display = 'initial';
+					setTimeout(function(){
+					    window.location.replace("/camperPage/"+camperID);
+					}, 1500);
+				}
+			});
+		}
+			
+		
+		function hideDisAdd() {
+			var not = document.getElementById("notHere");
+			not.style.display = "none";
+			
+			var button = document.getElementById("buttonText");
+			button.textContent = "Choose Discipline"
+			
+			var x = document.getElementById("x");
+			x.style.display = "none";
+			
+			var but = document.getElementById("saveDiscpButton");
+			but.style.display = "none";
+			
+			var sev = document.getElementById("severity");
+			sev.style.display = "none";
+			
+			var pu = document.getElementById("punish");
+			pu.value ="";
+			pu.style.display = "none";
+			
+			var realAdd = document.getElementById("addCamper");
+			realAdd.style.display = "initial";
+		}
+		
+		function displayDisAdd() {
+			var not = document.getElementById("notHere");
+			not.style.display = "initial";
+			var x = document.getElementById("x");
+			x.style.display = "initial";
+			var but = document.getElementById("saveDiscpButton");
+			but.style.display = "initial";
+			var oldAdd = document.getElementById("addCamper");
+			oldAdd.style.display = "none";
+		}
+		
+		
+		
+		function hideAllgAdd() {
+			var not = document.getElementById("allgdrop");
+			not.style.display = "none";
+			
+			var button = document.getElementById("allgButtonText");
+			button.textContent = "Choose Discipline";
+			
+			var x = document.getElementById("X");
+			x.style.display = "none";
+			
+			var but = document.getElementById("saveAllgButton");
+			but.style.display = "none";
+			
+			var pu = document.getElementById("specInstr");
+			pu.value ="";
+			pu.style.display = "none";
+			
+			var realAdd = document.getElementById("algadd");
+			realAdd.style.display = "initial";
+		}
+		
+		function displayAllgAdd() {
+			var not = document.getElementById("allgdrop");
+			not.style.display = "initial";
+			var x = document.getElementById("X");
+			x.style.display = "initial";
+			var but = document.getElementById("saveAllgButton");
+			but.style.display = "initial";
+			var oldAdd = document.getElementById("algadd");
+			oldAdd.style.display = "none";
+		}
+		
+		function storeAllg(aid, camperID, name) {
+			var variable = document.getElementById("algvariable");
+			variable.textContent = camperID + "," + aid;
+			
+			var button = document.getElementById("allgButtonText");
+			button.textContent = name;
+			
+			showSeverityAndSpecInstr();
+		}
+		
+		function showSeverityAndSpecInstr() {
+			document.getElementById("severity").style.display = 'initial';
+			document.getElementById("specInstr").style.display = 'initial';
+		}
+	</script>
+
+</html>
+				
